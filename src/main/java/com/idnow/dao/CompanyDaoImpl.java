@@ -22,11 +22,13 @@ public class CompanyDaoImpl implements CompanyDaoIf {
 	private  static Map<Integer,Company> companyStorage = new HashMap<>(); 
 	private Comparator<Company> companyComparator
     = (company1,company2)-> {
+    	// if the company slatime are equal then we find the rate = slapercent - currentslapercentage
     	if(company1.getSlaTime() == company2.getSlaTime()) {
     		float rate1 = company1.getSlaPercentage() - company1.getCurrrentSlaPercentage();
     		float rate2 = company2.getSlaPercentage() - company2.getCurrrentSlaPercentage();
     		return Float.compare(rate2,rate1);
     	}else {
+    		// if the company sla time are not equal we create the comparison based on sla time
     		return Integer.compare(company1.getSlaTime(),company2.getSlaTime());
     	}
     };
