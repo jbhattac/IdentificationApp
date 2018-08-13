@@ -1,13 +1,12 @@
 package com.idnow.dao;
 
 
-import java.util.Collection;
 import java.util.List;
 
 import com.idnow.exception.CompanyNotFoundException;
 import com.idnow.exception.DuplicateCompanyException;
 import com.idnow.model.Company;
-import com.idnow.model.Identification;
+
 
 /**
  * 
