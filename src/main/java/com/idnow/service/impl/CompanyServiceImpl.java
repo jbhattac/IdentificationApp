@@ -1,4 +1,4 @@
-package com.idnow.dao;
+package com.idnow.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,9 +15,10 @@ import org.springframework.validation.annotation.Validated;
 import com.idnow.exception.CompanyNotFoundException;
 import com.idnow.exception.DuplicateCompanyException;
 import com.idnow.model.Company;
+import com.idnow.service.CompanyService;
 
 @Component
-public class CompanyDaoImpl implements CompanyDaoIf {
+public class CompanyServiceImpl implements CompanyService {
 	
 	private  static Map<Integer,Company> companyStorage = new HashMap<>(); 
 	private Comparator<Company> companyComparator

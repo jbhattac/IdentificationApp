@@ -1,4 +1,4 @@
-package com.idnow.dao;
+package com.idnow.service;
 
 
 import java.util.List;
@@ -12,13 +12,13 @@ import com.idnow.model.Company;
  * 
  * @author JBhattacharjee
  * 
- * This represents the Repository in here we will be putting all the 
- * details about how the object is stored , we will expose convenience 
- * methods for the upper layers to access this.
+ * This represents the Service in here we will be putting all the 
+ * details logic about the Company  , we will expose convenience 
+ * methods for the upper layers to access it.
  * 
  */
 
-public interface CompanyDaoIf {
+public interface CompanyService {
 
 	/**
 	 * Creates  a Company if there is no other Company existing with same Id .

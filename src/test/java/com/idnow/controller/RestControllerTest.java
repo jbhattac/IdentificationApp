@@ -18,6 +18,8 @@ import com.idnow.dao.CompanyDaoIf;
 import com.idnow.dao.IdentificationDaoIf;
 import com.idnow.model.Company;
 import com.idnow.model.Identification;
+import com.idnow.service.CompanyService;
+import com.idnow.service.IdentificationService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(value = "IdNowApp.class")
@@ -28,10 +30,10 @@ public class RestControllerTest {
 	private MockMvc mvc;
 
 	@Autowired
-	IdentificationDaoIf identificationDao;
+	IdentificationService identificationService;
 
 	@Autowired
-	CompanyDaoIf companyDao;
+	CompanyService companyService;
 
 	/**
 	 * Example 1:
@@ -48,19 +50,36 @@ public class RestControllerTest {
 	 */
 	@Test
 	public void testcase1_sameCompany_differntWaitingTime() throws Exception {
-		Company comp1 = Company.builder().id(1).name("Company-1").slaPercentage(0.9f).slaTime(60)
-				.currrentSlaPercentage(0.95f).build();
-		Identification id1 = Identification.builder().id(1).name("Identification-1").time(1521315317).waitingTime(30)
-				.companyId(1).build();
-		Identification id2 = Identification.builder().id(2).name("Identification-2").time(141314357).waitingTime(45)
-				.companyId(1).build();
+		Company comp1 = Company.builder()
+								.id(1)
+								.name("Company-1")
+								.slaPercentage(0.9f)
+								.slaTime(60)
+								.currrentSlaPercentage(0.95f)
+								.build();
+		Identification id1 = Identification.builder()
+											.id(1)
+											.name("Identification-1")
+											.time(1521315317)
+											.waitingTime(30)
+											.companyId(1)
+											.build();
+		Identification id2 = Identification.builder()
+											.id(2)
+											.name("Identification-2")
+											.time(141314357)
+											.waitingTime(45)
+											.companyId(1)
+											.build();
 
-		companyDao.createCompany(comp1);
-		identificationDao.createIdentification(id1);
-		identificationDao.createIdentification(id2);
+		companyService.createCompany(comp1);
+		identificationService.createIdentification(id1);
+		identificationService.createIdentification(id2);
 
-		mvc.perform(get("/api/v1/pendingIdentifications").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is(id2.getName())))
+		mvc.perform(get("/api/v1/pendingIdentifications")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].name", is(id2.getName())))
 				.andExpect(jsonPath("$[1].name", is(id1.getName())));
 		clearData();
 
@@ -82,22 +101,44 @@ public class RestControllerTest {
 
 	@Test
 	public void testcase2_differntCurrentSlaPercentage() throws Exception {
-		Company comp1 = Company.builder().id(1).name("Company-1").slaPercentage(0.9f).slaTime(60)
-				.currrentSlaPercentage(0.95f).build();
-		Company comp2 = Company.builder().id(2).name("Company-2").slaPercentage(0.9f).slaTime(60)
-				.currrentSlaPercentage(0.90f).build();
-		Identification id1 = Identification.builder().id(1).name("Identification-1").time(1521315317).waitingTime(30)
-				.companyId(1).build();
-		Identification id2 = Identification.builder().id(2).name("Identification-2").time(141314357).waitingTime(30)
-				.companyId(2).build();
+		Company comp1 = Company.builder()
+								.id(1)
+								.name("Company-1")
+								.slaPercentage(0.9f)
+								.slaTime(60)
+								.currrentSlaPercentage(0.95f)
+								.build();
+		Company comp2 = Company.builder()
+								.id(2)
+								.name("Company-2")
+								.slaPercentage(0.9f)
+								.slaTime(60)
+								.currrentSlaPercentage(0.90f)
+								.build();
+		Identification id1 = Identification.builder()
+											.id(1)
+											.name("Identification-1")
+											.time(1521315317)
+											.waitingTime(30)
+											.companyId(1)
+											.build();
+		Identification id2 = Identification.builder()
+											.id(2)
+											.name("Identification-2")
+											.time(141314357)
+											.waitingTime(30)
+											.companyId(2)
+											.build();
 
-		companyDao.createCompany(comp1);
-		companyDao.createCompany(comp2);
-		identificationDao.createIdentification(id1);
-		identificationDao.createIdentification(id2);
+		companyService.createCompany(comp1);
+		companyService.createCompany(comp2);
+		identificationService.createIdentification(id1);
+		identificationService.createIdentification(id2);
 
-		mvc.perform(get("/api/v1/pendingIdentifications").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is(id2.getName())))
+		mvc.perform(get("/api/v1/pendingIdentifications")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].name", is(id2.getName())))
 				.andExpect(jsonPath("$[1].name", is(id1.getName())));
 
 		clearData();
@@ -105,8 +146,8 @@ public class RestControllerTest {
 	}
 
 	private void clearData() {
-		companyDao.clearAllCompany();
-		identificationDao.clearAllIdentification();
+		companyService.clearAllCompany();
+		identificationService.clearAllIdentification();
 	}
 
 	/**
@@ -123,22 +164,44 @@ public class RestControllerTest {
 	 */
 	@Test
 	public void testcase3_differntSlaProcessingRate() throws Exception {
-		Company comp1 = Company.builder().id(1).name("Company-1").slaPercentage(0.9f).slaTime(60)
-				.currrentSlaPercentage(0.95f).build();
-		Company comp2 = Company.builder().id(2).name("Company-2").slaPercentage(0.8f).slaTime(120)
-				.currrentSlaPercentage(0.95f).build();
-		Identification id1 = Identification.builder().id(1).name("Identification-1").time(1521315317).waitingTime(30)
-				.companyId(1).build();
-		Identification id2 = Identification.builder().id(2).name("Identification-2").time(141314357).waitingTime(30)
-				.companyId(2).build();
+		Company comp1 = Company.builder()
+								.id(1)
+								.name("Company-1")
+								.slaPercentage(0.9f)
+								.slaTime(60)
+								.currrentSlaPercentage(0.95f)
+								.build();
+		Company comp2 = Company.builder()
+								.id(2)
+								.name("Company-2")
+								.slaPercentage(0.8f)
+								.slaTime(120)
+								.currrentSlaPercentage(0.95f)
+								.build();
+		Identification id1 = Identification.builder()
+											.id(1)
+											.name("Identification-1")
+											.time(1521315317)
+											.waitingTime(30)
+											.companyId(1)
+											.build();
+		Identification id2 = Identification.builder()
+											.id(2)
+											.name("Identification-2")
+											.time(141314357)
+											.waitingTime(30)
+											.companyId(2)
+											.build();
 
-		companyDao.createCompany(comp1);
-		companyDao.createCompany(comp2);
-		identificationDao.createIdentification(id1);
-		identificationDao.createIdentification(id2);
+		companyService.createCompany(comp1);
+		companyService.createCompany(comp2);
+		identificationService.createIdentification(id1);
+		identificationService.createIdentification(id2);
 
-		mvc.perform(get("/api/v1/pendingIdentifications").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is(id1.getName())))
+		mvc.perform(get("/api/v1/pendingIdentifications")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].name", is(id1.getName())))
 				.andExpect(jsonPath("$[1].name", is(id2.getName())));
 
 		clearData();
@@ -161,22 +224,44 @@ public class RestControllerTest {
 
 	@Test
 	public void testcase4_differntSlaProcessingRate_waitingtime() throws Exception {
-		Company comp1 = Company.builder().id(1).name("Company-1").slaPercentage(0.9f).slaTime(60)
-				.currrentSlaPercentage(0.95f).build();
-		Company comp2 = Company.builder().id(2).name("Company-2").slaPercentage(0.8f).slaTime(120)
-				.currrentSlaPercentage(0.8f).build();
-		Identification id1 = Identification.builder().id(1).name("Identification-1").time(1521315317).waitingTime(45)
-				.companyId(1).build();
-		Identification id2 = Identification.builder().id(2).name("Identification-2").time(141314357).waitingTime(30)
-				.companyId(2).build();
+		Company comp1 = Company.builder()
+								.id(1)
+								.name("Company-1")
+								.slaPercentage(0.9f)
+								.slaTime(60)
+								.currrentSlaPercentage(0.95f)
+								.build();
+		Company comp2 = Company.builder()
+								.id(2)
+								.name("Company-2")
+								.slaPercentage(0.8f)
+								.slaTime(120)
+								.currrentSlaPercentage(0.8f)
+								.build();
+		Identification id1 = Identification.builder()
+											.id(1)
+											.name("Identification-1")
+											.time(1521315317)
+											.waitingTime(45)
+											.companyId(1)
+											.build();
+		Identification id2 = Identification.builder()
+											.id(2)
+											.name("Identification-2")
+											.time(141314357)
+											.waitingTime(30)
+											.companyId(2)
+											.build();
 
-		companyDao.createCompany(comp1);
-		companyDao.createCompany(comp2);
-		identificationDao.createIdentification(id1);
-		identificationDao.createIdentification(id2);
+		companyService.createCompany(comp1);
+		companyService.createCompany(comp2);
+		identificationService.createIdentification(id1);
+		identificationService.createIdentification(id2);
 
-		mvc.perform(get("/api/v1/pendingIdentifications").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is(id1.getName())))
+		mvc.perform(get("/api/v1/pendingIdentifications")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].name", is(id1.getName())))
 				.andExpect(jsonPath("$[1].name", is(id2.getName())));
 
 		clearData();

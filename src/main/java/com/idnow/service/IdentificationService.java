@@ -1,4 +1,4 @@
-package com.idnow.dao;
+package com.idnow.service;
 
 import java.util.List;
 
@@ -9,7 +9,16 @@ import com.idnow.exception.DuplicateIdentificationException;
 import com.idnow.exception.IdentificationNotFoundException;
 import com.idnow.model.Identification;
 
-public interface IdentificationDaoIf {
+/**
+ * 
+ * @author JBhattacharjee
+ * 
+ * This represents the Service in here we will be putting all the 
+ * details logic about the Identification  , we will expose convenience 
+ * methods for the upper layers to access it.
+ * 
+ */
+public interface IdentificationService {
 
 	/**
 	 * This method will create an identification and save it provided the the

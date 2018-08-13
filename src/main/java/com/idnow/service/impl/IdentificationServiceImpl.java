@@ -1,4 +1,4 @@
-package com.idnow.dao;
+package com.idnow.service.impl;
 
 
 import java.util.Comparator;
@@ -16,14 +16,16 @@ import com.idnow.exception.DuplicateIdentificationException;
 import com.idnow.exception.IdentificationNotFoundException;
 import com.idnow.model.Company;
 import com.idnow.model.Identification;
+import com.idnow.service.CompanyService;
+import com.idnow.service.IdentificationService;
 
 @Component
-public class IdentificationDaoImpl implements IdentificationDaoIf {
+public class IdentificationServiceImpl implements IdentificationService {
 
-	private final CompanyDaoIf companyDao;
+	private final CompanyService companyService;
 
-	public IdentificationDaoImpl(CompanyDaoIf companyDao) {
-		this.companyDao = companyDao;
+	public IdentificationServiceImpl(CompanyService companyService) {
+		this.companyService = companyService;
 	}
 
 	private static Map<Integer, Identification> identificationStorage = new HashMap<>();
@@ -35,7 +37,7 @@ public class IdentificationDaoImpl implements IdentificationDaoIf {
 	public Identification createIdentification(@Validated Identification identification)
 			throws DuplicateIdentificationException, CompanyNotFoundException {
 		// the company should already exist for the Identification to be persisted.
-		companyDao.getCompanyById(identification.getCompanyId());
+		companyService.getCompanyById(identification.getCompanyId());
 		if (null == identificationStorage.put(identification.getId(), identification)) {
 			return identificationStorage.get(identification.getId());
 		} else {
@@ -64,7 +66,7 @@ public class IdentificationDaoImpl implements IdentificationDaoIf {
 	 */
 	@Override
 	public List<Identification> findAllSortedIdentifications() {
-							return			 companyDao.findAllSortedCompanies()
+							return			 companyService.findAllSortedCompanies()
 															.stream()
 															.map(Company::getId)
 															.map(id->findAllSortedIdentificationAssociatedWithCompanyId(id))
